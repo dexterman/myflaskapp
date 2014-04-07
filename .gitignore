@@ -52,3 +52,9 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+.DS_store
+
+requiremenets副本.txt
+db_repository/
+include/
+*.db
