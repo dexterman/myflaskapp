@@ -11,5 +11,6 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 # paginate
 POSTS_PER_PAGE = 1
 
+IMAGE_EXT = r'gif|png|jpe?g|bmp'
 UPLOAD_LOCAL_DIR = os.path.join(basedir, 's')
 UPLOAD_PATH = os.path.join('/', 's')

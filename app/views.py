@@ -3,13 +3,15 @@ from datetime import datetime
 import hashlib
 import os
 import uuid
+import re
+import urllib2
 
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from werkzeug import secure_filename
 
 from app import app, db, lm #, oid
-from config import POSTS_PER_PAGE, UPLOAD_LOCAL_DIR, UPLOAD_PATH
+from config import POSTS_PER_PAGE, UPLOAD_LOCAL_DIR, UPLOAD_PATH, IMAGE_EXT
 from forms import LoginForm, PostForm
 from models import User, Post, ROLE_USER, ROLE_ADMIN
 
@@ -114,18 +116,21 @@ def logout():
     return redirect(url_for('index'))
 
 
+def allowed_file(filename):
+    return True
+
+
 def listImage(rootDir, retlist):
     for cfile in os.listdir(rootDir):
         path = os.path.join(rootDir, cfile)
         if os.path.isdir(path):
             listImage(path, retlist)
         else:
-            if cfile.endswith('.gif') or cfile.endswith('.png') or cfile.endswith('.jpg') or cfile.endswith('.bmp'):
-                retlist.append(os.path.join(UPLOAD_PATH, g.user.username, 'images') + cfile)
-
-
-def allowed_file(filename):
-    return True
+            ext = cfile.split('.')[-1]
+            match = re.search(IMAGE_EXT, ext)
+            # if cfile.endswith('.gif') or cfile.endswith('.png') or cfile.endswith('.jpg') or cfile.endswith('.bmp'):
+            if match:
+                retlist.append(os.path.join(UPLOAD_PATH, g.user.username, 'images', cfile))
 
 
 @app.route('/s/<path:filepath>')
@@ -141,7 +146,7 @@ def imageUpload(filetype='images'):
     elif request.method == 'POST':
         upfile = request.files['upfile']
         if upfile and allowed_file(upfile.filename):
-            filename = str(uuid.uuid1()) + '.' + secure_filename(upfile.filename).split('.')[-1]#secure_filename(upfile.filename)
+            filename = ''.join(str(uuid.uuid1()).split('-')) + '.' + secure_filename(upfile.filename).split('.')[-1]
             filetitle = request.form['pictitle']
             filepath = os.path.join(UPLOAD_PATH, str(g.user.username), filetype, filename)
             local_dir = os.path.join(UPLOAD_LOCAL_DIR, str(g.user.username), filetype)
@@ -150,6 +155,41 @@ def imageUpload(filetype='images'):
             upfile.save(os.path.join(local_dir, filename))
             # "{'url':'','title':'','original':'','state':'SUCCESS'}"
             retData = dict(url=filepath, title=filetitle, original=filename, state='SUCCESS')
-        import json
-        app.logger.debug(json.dumps(retData))
+        # import json
+        # app.logger.debug(json.dumps(retData))
         return jsonify(retData)
+
+
+@app.route('/ue/imageManager', methods=['GET', 'POST'])
+@login_required
+def imageManager():
+    if request.form['action'] == 'get':
+        retfiles = []
+        listImage(UPLOAD_LOCAL_DIR, retfiles)
+        htmlContent = "ue_separate_ue".join(retfiles)
+        return htmlContent
+    return ""
+
+@app.route('/ue/getRemoteImage', methods=['GET', 'POST'])
+@login_required
+def getRemoteImage():
+    imageUrls = request.form['upfile'].split('ue_separate_ue')
+    for iurl in imageUrls:
+        ext = iurl.split('.')[-1]
+        outUrls = []
+        if re.search(IMAGE_EXT, ext):
+            filename = ''.join(str(uuid.uuid1()).split('-')) + '.' + ext
+            updir = os.path.join(UPLOAD_LOCAL_DIR, g.user.username, 'images')
+            if not os.path.isdir(updir):
+                os.makedirs(updir)
+            with open( os.path.join(updir, filename) , 'wb' ) as upfile:
+                upfile.write(urllib2.urlopen(iurl).read())
+                outUrls.append(os.path.join(UPLOAD_PATH, 'images', filename))
+    outUrls = "ue_separate_ue".join(outUrls)
+    return jsonify(url=outUrls, tip=u'远程图片抓取成功！', srcUrl=imageUrls)
+
+
+
+
+
+

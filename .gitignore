@@ -60,3 +60,4 @@ include/
 *.db
 setup.py
 app/encrypt.py
+s/

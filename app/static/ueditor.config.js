@@ -50,14 +50,14 @@
 
         //远程抓取配置区
         //,catchRemoteImageEnable:true               //是否开启远程图片抓取,默认开启
-        ,catcherUrl: "jsp/getRemoteImage.jsp"   //处理远程图片抓取的地址
+        ,catcherUrl: "/ue/getRemoteImage"   //处理远程图片抓取的地址
         ,catcherPath: ""                  //图片修正地址，同imagePath
         //,catchFieldName:"upfile"                   //提交到后台远程图片uri合集，若此处修改，需要在后台对应文件修改对应参数
         //,separater:'ue_separate_ue'               //提交至后台的远程图片地址字符串分隔符
         //,localDomain:[]                            //本地顶级域名，当开启远程图片抓取时，除此之外的所有其它域名下的图片都将被抓取到本地,默认不抓取127.0.0.1和localhost
 
         //图片在线管理配置区
-        ,imageManagerUrl: "jsp/imageManager.jsp"       //图片在线管理的处理地址
+        ,imageManagerUrl: "/ue/imageManager"       //图片在线管理的处理地址
         ,imageManagerPath: ""                                    //图片修正地址，同imagePath
 
         //屏幕截图配置区
