@@ -6,7 +6,7 @@
 {% for post in posts %}
 <p>
   <a href="{{ url_for('page', post_id=post.id)}}">{{post.topic}}</a>
-    | {{post.sequence}} | {{post.user.username}} | <b>{{post.body}}</b>
+    | {{post.sequence}} | {{post.user.username}} | <b>{{post.body|safe}}</b>
     | <a href="{{ url_for('remove', post_id=post.id)}}">删除</a>
 </p>
 {% endfor %}

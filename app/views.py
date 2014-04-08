@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import hashlib
+import os
+import uuid
 
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import render_template, flash, redirect, session, url_for, request, g, jsonify, send_from_directory
 from flask.ext.login import login_user, logout_user, current_user, login_required
+from werkzeug import secure_filename
 
 from app import app, db, lm #, oid
-from config import POSTS_PER_PAGE
+from config import POSTS_PER_PAGE, UPLOAD_LOCAL_DIR, UPLOAD_PATH
 from forms import LoginForm, PostForm
 from models import User, Post, ROLE_USER, ROLE_ADMIN
 
@@ -110,3 +113,43 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+
+def listImage(rootDir, retlist):
+    for cfile in os.listdir(rootDir):
+        path = os.path.join(rootDir, cfile)
+        if os.path.isdir(path):
+            listImage(path, retlist)
+        else:
+            if cfile.endswith('.gif') or cfile.endswith('.png') or cfile.endswith('.jpg') or cfile.endswith('.bmp'):
+                retlist.append(os.path.join(UPLOAD_PATH, g.user.username, 'images') + cfile)
+
+
+def allowed_file(filename):
+    return True
+
+
+@app.route('/s/<path:filepath>')
+def getImage(filepath):
+    return send_from_directory(UPLOAD_LOCAL_DIR, filepath)
+
+
+@app.route('/ue/upload/<filetype>', methods=['POST', 'GET'])
+@login_required
+def imageUpload(filetype='images'):
+    if request.method == 'GET' and request.args.get('fetch', None):
+        return 'updateSavePath(["s/'+ filetype +'"]);'
+    elif request.method == 'POST':
+        upfile = request.files['upfile']
+        if upfile and allowed_file(upfile.filename):
+            filename = str(uuid.uuid1()) + '.' + secure_filename(upfile.filename).split('.')[-1]#secure_filename(upfile.filename)
+            filetitle = request.form['pictitle']
+            filepath = os.path.join(UPLOAD_PATH, str(g.user.username), filetype, filename)
+            local_dir = os.path.join(UPLOAD_LOCAL_DIR, str(g.user.username), filetype)
+            if not os.path.isdir(local_dir):
+                os.makedirs(local_dir)
+            upfile.save(os.path.join(local_dir, filename))
+            # "{'url':'','title':'','original':'','state':'SUCCESS'}"
+            retData = dict(url=filepath, title=filetitle, original=filename, state='SUCCESS')
+        import json
+        app.logger.debug(json.dumps(retData))
+        return jsonify(retData)
