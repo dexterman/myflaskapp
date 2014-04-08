@@ -58,3 +58,5 @@ requiremenets副本.txt
 db_repository/
 include/
 *.db
+setup.py
+app/encrypt.py

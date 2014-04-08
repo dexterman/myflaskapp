@@ -50,8 +50,9 @@ class Post(db.Model):
     body = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
     sequence = db.Column(db.Integer, server_default='0')
+    status = db.Column(db.String(10), server_default='0')
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Post %r>' % (self.body)
+        return '<Post %r>' % (self.topic)

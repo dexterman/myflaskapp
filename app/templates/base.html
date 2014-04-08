@@ -8,16 +8,13 @@
     {% block head %}{% endblock %}
   </head>
   <body>
-
     <div>
         {% if g.user.is_authenticated() %}
         {{g.user.username}}
         | <a href="{{ url_for('logout') }}">注销</a>
         {% endif %}
     </div>
-
     <hr>
-
     <div class='nav'>
         导航：
         <a href="{{ url_for('index') }}">首页</a>
@@ -25,7 +22,6 @@
         | <a href="{{ url_for('page') }}">新增内容</a>
         {% endif %}
     </div>
-
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <ul>
@@ -37,5 +33,6 @@
     {% endwith %}
 
     {% block content %}{% endblock %}
+
   </body>
 </html>

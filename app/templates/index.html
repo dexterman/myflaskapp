@@ -11,4 +11,7 @@
 </p>
 {% endfor %}
 
+{% from 'macro.html' import pagination_html, pagination_href %}
+{{ pagination_html(pagination, request.endpoint, request.query_string) }}
+
 {% endblock %}

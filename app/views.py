@@ -10,6 +10,23 @@ from config import POSTS_PER_PAGE
 from forms import LoginForm, PostForm
 from models import User, Post, ROLE_USER, ROLE_ADMIN
 
+# logger example
+# app.logger.debug('A value for debugging')
+# app.logger.warning('A warning occurred (%d apples)', 42)
+# app.logger.error('An error occurred')
+
+def url_for_other_page(page):
+    args = request.view_args.copy()
+    args['page'] = page
+    return url_for(request.endpoint, **args)
+app.jinja_env.globals['url_for_other_page'] = url_for_other_page
+
+
+md5 = hashlib.md5()
+def encrypt(data):
+    md5.update(data)
+    return md5.hexdigest()
+
 
 @lm.user_loader
 def load_user(id):
@@ -25,8 +42,9 @@ def before_request():
 @login_required
 def index(page=1):
     user = g.user
-    posts = Post.query.order_by(Post.sequence).filter_by(user=user).paginate(1, POSTS_PER_PAGE, False).items
-    return render_template('index.html', title=u'首页', user=user, posts=posts)
+    pagination = Post.query.order_by(Post.sequence).filter_by(user=user).paginate(page, POSTS_PER_PAGE, False)
+    posts = pagination.items
+    return render_template('index.html', title=u'首页', user=user, posts=posts, pagination=pagination)
 
 
 @app.route('/page/', methods=['POST', 'GET'])
@@ -91,10 +109,4 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-md5 = hashlib.md5()
-def encrypt(data):
-    md5.update(data)
-    return md5.hexdigest()
 
