@@ -9,7 +9,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 # paginate
-POSTS_PER_PAGE = 1
+POSTS_PER_PAGE = 10
 
 IMAGE_EXT = r'gif|png|jpe?g|bmp'
 UPLOAD_LOCAL_DIR = os.path.join(basedir, 's')

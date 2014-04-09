@@ -16,7 +16,7 @@
             var editor = UE.ui.Editor({initialFrameHeight: 400, initialFrameWidth: 1000});
             editor.render('body');
             $('.nav .navbar-nav').removeClass('active');
-            $('#page').addClass('active');
+            // $('#page').addClass('active');
         });
     </script>
 {% endblock %}
@@ -41,6 +41,7 @@
         {{form.body(cols="100", rows="20")}}
     </div>
     <button type="submit" class="btn btn-primary"> 保 存 </button>
+    <a href='{{url_for('index')}}' class="btn btn-default"> 返 回 </a>
 </form>
 
 {% endblock %}

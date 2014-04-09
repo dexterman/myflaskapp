@@ -1,8 +1,7 @@
 
 {% macro pagination_html(pagination, endpoint, query_string) -%}
-<div>
   <ul class="pagination">
-    <li class='disabled'><a href='javascript:void(0);'>总共{{ pagination.total }}条/{{ pagination.pages }}页</a></li>
+
     {% if pagination.has_prev %}
     <li><a href="{{ pagination_href(endpoint, pagination.prev_num, query_string) }}">&laquo;上一页</a></li>
     {% endif %}
@@ -20,8 +19,8 @@
     {% if pagination.has_next %}
     <li><a href="{{ pagination_href(endpoint, pagination.next_num, query_string) }}">下一页&raquo;</a></li>
     {% endif %}
+    <li class='disabled'><a href='javascript:void(0);'>共{{ pagination.total }}条 / {{ pagination.pages }}页</a></li>
   </ul>
-</div>
 {%- endmacro %}
 
 {% macro pagination_href(endpoint, page, query_string) -%}

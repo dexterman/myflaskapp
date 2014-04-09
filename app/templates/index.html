@@ -10,10 +10,16 @@
 </script>
 {% endblock %}
 {% block content %}
+<div class="btn-group">
+    <a class='btn btn-info btn-sm' href="{{ url_for('page') }}"> 新增 </a>
+</div>
+
+
 <div class='table-responsive'>
 <table class='table table-hover'>
 <thead>
     <tr>
+        <th></th>
         <th>{{postform.id.label}}</th>
         <th>{{postform.topic.label}}</th>
         <th>{{postform.title.label}}</th>
@@ -24,6 +30,7 @@
 <tbody>
 {% for post in posts %}
 <tr>
+    <td><input type="checkbox"></td>
     <td>{{post.id}}</td>
     <td><a href="{{ url_for('page', post_id=post.id)}}">{{post.topic}}</a></td>
     <td>{{post.title}}</td>
@@ -34,7 +41,8 @@
 </tbody>
 </table>
 </div>
+<div class='pull-right'>
 {% from 'macro.html' import pagination_html, pagination_href %}
 {{ pagination_html(pagination, request.endpoint, request.query_string) }}
-
+</div>
 {% endblock %}
