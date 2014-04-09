@@ -27,8 +27,8 @@ def url_for_other_page(page):
 app.jinja_env.globals['url_for_other_page'] = url_for_other_page
 
 
-md5 = hashlib.md5()
 def encrypt(data):
+    md5 = hashlib.md5()
     md5.update(data)
     return md5.hexdigest()
 
@@ -49,7 +49,7 @@ def index(page=1):
     user = g.user
     pagination = Post.query.order_by(Post.sequence).filter_by(user=user).paginate(page, POSTS_PER_PAGE, False)
     posts = pagination.items
-    return render_template('index.html', title=u'首页', user=user, posts=posts, pagination=pagination)
+    return render_template('index.html', title=u'首页', user=user, posts=posts, pagination=pagination, postform=PostForm())
 
 
 @app.route('/page/', methods=['POST', 'GET'])
@@ -98,22 +98,22 @@ def remove(post_id):
 def login():
     if g.user is not None and g.user.is_authenticated():
         return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
         password = encrypt(request.form['password'])
         user = User.query.filter_by(username=request.form['username'], password=password).first()
-        if user is None:
-            flash(u'用户名、密码错误！')
-            return render_template('login.html',title=u'登录',form=form)
-        login_user(user)
-        return redirect(request.args.get('next') or url_for('index'))
+        # app.logger.debug(request.form['username'] + ', |' + request.form['password'] + "|")
+        if user:
+            login_user(user)
+            return redirect(request.args.get('next') or url_for('index'))
+        flash(u'用户名或密码错误！')
+    form = LoginForm()
     return render_template('login.html',itle=u'登录',form=form)
 
 
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 
 def allowed_file(filename):

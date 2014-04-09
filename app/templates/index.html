@@ -1,16 +1,39 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 
+{% block head %}
+<script type='text/javascript'>
+    $(function(){
+        $('.nav .navbar-nav').removeClass('active');
+        $('#index').addClass('active');
+    });
+</script>
+{% endblock %}
 {% block content %}
-
+<div class='table-responsive'>
+<table class='table table-hover'>
+<thead>
+    <tr>
+        <th>{{postform.id.label}}</th>
+        <th>{{postform.topic.label}}</th>
+        <th>{{postform.title.label}}</th>
+        <th>{{postform.sequence.label}}</th>
+        <th>操作</th>
+    </tr>
+</thead>
+<tbody>
 {% for post in posts %}
-<p>
-  <a href="{{ url_for('page', post_id=post.id)}}">{{post.topic}}</a>
-    | {{post.sequence}} | {{post.user.username}} | <b>{{post.body|safe}}</b>
-    | <a href="{{ url_for('remove', post_id=post.id)}}">删除</a>
-</p>
+<tr>
+    <td>{{post.id}}</td>
+    <td><a href="{{ url_for('page', post_id=post.id)}}">{{post.topic}}</a></td>
+    <td>{{post.title}}</td>
+    <td>{{post.sequence}}</td>
+    <td><a href="{{ url_for('remove', post_id=post.id)}}" class="btn btn-warning btn-sm">删除</a></td>
+</tr>
 {% endfor %}
-
+</tbody>
+</table>
+</div>
 {% from 'macro.html' import pagination_html, pagination_href %}
 {{ pagination_html(pagination, request.endpoint, request.query_string) }}
 

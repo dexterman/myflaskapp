@@ -9,7 +9,7 @@ class LoginForm(Form):
     # remember_me = BooleanField('remember_me', default = False)
 
 class PostForm(Form):
-    id = HiddenField('id')
+    id = HiddenField(u'编号')
     topic = TextField(u'Tab标题', validators = [InputRequired(u'必填'), Length(max=10, message=u'请输入小于%(max)d个中文字符！')])
     title = TextField(u'标题')
     sequence = IntegerField(u'排序')
